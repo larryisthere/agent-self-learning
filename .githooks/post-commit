@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Agent Self-Learning Framework
+# Reminds you to capture memory after committing code changes.
+
+echo ""
+echo -e "\033[96m💡 [Memory Guard]:\033[0m Changes committed."
+echo -e "Did you learn something worth preserving? Run \033[93m'/memory_capture'\033[0m to log it."
+echo ""
+
+exit 0
