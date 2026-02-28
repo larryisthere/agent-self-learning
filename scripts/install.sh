@@ -74,7 +74,8 @@ setup_claude_softlink() {
         # Remove whitespace
         hash_input="$(echo -e "${hash_input}" | tr -d '[:space:]')"
 
-        if [[ "${hash_input,,}" == "skip" ]]; then
+        local hash_lower=$(echo "$hash_input" | tr '[:upper:]' '[:lower:]')
+        if [ "$hash_lower" = "skip" ]; then
             print_step "Skipping Claude softlink setup."
             return
         fi
