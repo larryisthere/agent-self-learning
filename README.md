@@ -32,6 +32,20 @@ bash scripts/install.sh
 3. Installs a `post-commit` git hook in `.githooks/` and configures git to use it.
 4. Appends a reference to `.agent/PROJECT_MEMORY.md` in `CLAUDE.md` and `.cursorrules`, without overwriting existing content.
 
+## Installing Just the Skill
+
+To add only the `memory_capture` skill to an existing project (without installing the full framework):
+
+```bash
+# Via a skill installer
+--repo larryisthere/agent-self-learning --path skills/memory_capture
+
+# Or manually
+cp -r skills/memory_capture /your/project/.agent/skills/
+```
+
+The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `MEMORY.md`, or `.agents/MEMORY.md`) and adapts accordingly — no manual configuration needed.
+
 ## Usage & Best Practices
 
 - **Define Your Rules**: Open `.agent/PROJECT_MEMORY.md` and define your project's architecture, state management guidelines, and testing rules.
