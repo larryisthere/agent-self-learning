@@ -31,4 +31,7 @@
 ### [YYYY-MM-DD] UI Rendering
 - *Example: When rendering charts with `fl_chart`, always wrap the parent in a fixed-height `SizedBox` to prevent infinite layout exceptions.*
 
+### [2026-03-04] Skill Execution Semantics
+- In this framework, "run <path>/SKILL.md" means read the file and execute steps manually; enforce a pre-final checklist and report `Memory capture: done/skipped` to make compliance auditable.
+
 <!-- MEMORY_CAPTURE_APPEND_TARGET -->

@@ -16,10 +16,56 @@ print_warn()    { echo -e "[${YELLOW}WARNING${NC}] $1"; }
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="$(pwd)"
 _had_error=false
+MANAGED_BLOCK_START="<!-- AGENT_SELF_LEARNING:BEGIN -->"
+MANAGED_BLOCK_END="<!-- AGENT_SELF_LEARNING:END -->"
 
 print_error() {
     echo -e "[${RED}ERROR${NC}] $1"
     _had_error=true
+}
+
+usage() {
+    cat <<EOF
+Usage: bash scripts/install.sh [--target <project-dir>]
+
+Options:
+  --target <project-dir>  Install framework files into a specific project root.
+EOF
+}
+
+resolve_target_dir() {
+    local value="$1"
+    if [ -z "$value" ]; then
+        print_error "--target requires a value."
+        usage
+        exit 1
+    fi
+    if [ ! -d "$value" ]; then
+        print_error "Target directory does not exist: $value"
+        exit 1
+    fi
+    TARGET_DIR="$(cd "$value" && pwd)"
+}
+
+parse_args() {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --target)
+                shift
+                resolve_target_dir "$1"
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                print_error "Unknown argument: $1"
+                usage
+                exit 1
+                ;;
+        esac
+        shift
+    done
 }
 
 # 1. Setup Project Memory
@@ -71,6 +117,12 @@ setup_claude_softlink() {
     mkdir -p "$target_memory_dir" || { print_error "Failed to create directory $target_memory_dir."; return; }
 
     if [ -L "$target_memory_file" ]; then
+        local current_target
+        current_target="$(readlink "$target_memory_file")"
+        if [ "$current_target" = "$local_memory_file" ]; then
+            print_step "Claude memory softlink already points to project memory. Skipping."
+            return
+        fi
         rm "$target_memory_file" || { print_error "Failed to remove existing softlink."; return; }
         print_step "Removed existing softlink."
     elif [ -f "$target_memory_file" ]; then
@@ -101,8 +153,8 @@ setup_git_hooks() {
         return
     fi
 
-    if [ "$template_hook" -ef "$target_hook" ]; then
-        print_step "Hook is already in place. Skipping copy."
+    if [ -f "$target_hook" ] && cmp -s "$template_hook" "$target_hook"; then
+        print_step "Hook content already up to date. Skipping copy."
     else
         cp "$template_hook" "$target_hook" || { print_error "Failed to copy hook."; return; }
         chmod 755 "$target_hook" || { print_error "Failed to make hook executable."; return; }
@@ -124,9 +176,34 @@ setup_git_hooks() {
 add_bridge_reference() {
     local bridge_file="$1"
     local content="$2"
+    local tmp_file
+    local block_file
 
-    if grep -q "PROJECT_MEMORY" "$bridge_file" 2>/dev/null; then
-        print_step "$bridge_file already references PROJECT_MEMORY.md. Skipping."
+    if [ ! -f "$bridge_file" ]; then
+        printf "%s\n" "$content" > "$bridge_file" || { print_error "Failed to create $bridge_file."; return; }
+        print_success "Created $bridge_file"
+        return
+    fi
+
+    if grep -Fq "$MANAGED_BLOCK_START" "$bridge_file" && grep -Fq "$MANAGED_BLOCK_END" "$bridge_file"; then
+        block_file="$(mktemp)"
+        tmp_file="$(mktemp)"
+        printf "%s\n" "$content" > "$block_file" || { rm -f "$tmp_file" "$block_file"; print_error "Failed to stage managed block content."; return; }
+        awk -v start="$MANAGED_BLOCK_START" -v end="$MANAGED_BLOCK_END" -v block_path="$block_file" '
+            BEGIN { in_block=0 }
+            function print_block(path,   line) {
+                while ((getline line < path) > 0) {
+                    print line
+                }
+                close(path)
+            }
+            $0 == start { print_block(block_path); in_block=1; next }
+            $0 == end { in_block=0; next }
+            !in_block { print }
+        ' "$bridge_file" > "$tmp_file" || { rm -f "$tmp_file" "$block_file"; print_error "Failed to update managed block in $bridge_file."; return; }
+        mv "$tmp_file" "$bridge_file" || { rm -f "$tmp_file" "$block_file"; print_error "Failed to write updated $bridge_file."; return; }
+        rm -f "$block_file"
+        print_step "Managed block already present in $bridge_file. Refreshed in place."
         return
     fi
 
@@ -135,8 +212,26 @@ add_bridge_reference() {
 }
 
 setup_bridge_files() {
-    local reference_content="> Project memory: \`.agent/PROJECT_MEMORY.md\`
-> Available skills: \`.agent/skills/\`"
+    local reference_content
+    reference_content="$(cat <<'EOF'
+<!-- AGENT_SELF_LEARNING:BEGIN -->
+> Project memory: `.agent/PROJECT_MEMORY.md`
+> Available skills: `.agent/skills/`
+
+## Execution Semantics (Critical)
+- "Run `<path>/SKILL.md`" means: read the file and execute its steps manually.
+- Do not call Claude Code built-in Skill tools for this framework unless the user explicitly asks for that mode.
+
+## Pre-Final-Response Checklist (Must)
+1. Re-read `.agent/PROJECT_MEMORY.md` in full.
+2. Decide whether this session includes non-trivial work.
+3. If yes, read and execute `.agent/skills/memory_capture/SKILL.md`.
+4. In the final response, include one line:
+   - `Memory capture: done`
+   - or `Memory capture: skipped (<reason>)`
+<!-- AGENT_SELF_LEARNING:END -->
+EOF
+)"
 
     add_bridge_reference "${TARGET_DIR}/CLAUDE.md"     "$reference_content"
     add_bridge_reference "${TARGET_DIR}/.cursorrules"  "$reference_content"
@@ -145,6 +240,10 @@ setup_bridge_files() {
 echo "=================================================="
 echo "🧠 Agent Self-Learning Framework Installer"
 echo "=================================================="
+
+parse_args "$@"
+
+print_step "Installing into target project: $TARGET_DIR"
 
 setup_project_memory
 setup_claude_softlink
@@ -159,4 +258,4 @@ else
     echo -e "${GREEN}Installation Complete!${NC}"
 fi
 echo " 1. Edit .agent/PROJECT_MEMORY.md to define your architecture and rules."
-echo " 2. Use /memory_capture to log insights after solving hard problems."
+echo " 2. Execute .agent/skills/memory_capture/SKILL.md to log insights after solving hard problems."
