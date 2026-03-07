@@ -233,8 +233,10 @@ setup_bridge_files() {
 EOF
 )"
 
-    add_bridge_reference "${TARGET_DIR}/CLAUDE.md"     "$reference_content"
-    add_bridge_reference "${TARGET_DIR}/.cursorrules"  "$reference_content"
+    add_bridge_reference "${TARGET_DIR}/CLAUDE.md"         "$reference_content"
+    add_bridge_reference "${TARGET_DIR}/GEMINI.md"        "$reference_content"
+    add_bridge_reference "${TARGET_DIR}/ANTIGRAVITY.md"   "$reference_content"
+    add_bridge_reference "${TARGET_DIR}/.cursorrules"     "$reference_content"
 }
 
 echo "=================================================="

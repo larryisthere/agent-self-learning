@@ -34,4 +34,7 @@
 ### [2026-03-04] Skill Execution Semantics
 - In this framework, "run <path>/SKILL.md" means read the file and execute steps manually; enforce a pre-final checklist and report `Memory capture: done/skipped` to make compliance auditable.
 
+### [2026-03-07] Multi-Agent Bridge Files
+- Generate the same self-learning bridge content into `CLAUDE.md`, `GEMINI.md`, and `ANTIGRAVITY.md` during install so agent-specific entrypoint discovery does not depend on Claude-only filenames.
+
 <!-- MEMORY_CAPTURE_APPEND_TARGET -->
