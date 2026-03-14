@@ -89,7 +89,24 @@ setup_project_memory() {
     fi
 }
 
-# 2. Setup Claude Softlink (auto-detect project directory)
+# 2. Setup Built-in Skills
+setup_skills() {
+    local source_skill_dir="${SCRIPT_DIR}/../skills/memory_capture"
+    local target_skills_dir="${TARGET_DIR}/.agent/skills"
+    local target_skill_dir="${target_skills_dir}/memory_capture"
+
+    if [ ! -f "${source_skill_dir}/SKILL.md" ]; then
+        print_error "memory_capture skill not found at ${source_skill_dir}/SKILL.md."
+        exit 1
+    fi
+
+    mkdir -p "$target_skills_dir" || { print_error "Failed to create directory $target_skills_dir."; exit 1; }
+    rm -rf "$target_skill_dir" || { print_error "Failed to replace existing skill at $target_skill_dir."; exit 1; }
+    cp -R "$source_skill_dir" "$target_skill_dir" || { print_error "Failed to install memory_capture skill."; exit 1; }
+    print_success "Installed memory_capture skill at $target_skill_dir"
+}
+
+# 3. Setup Claude Softlink (auto-detect project directory)
 setup_claude_softlink() {
     local claude_projects_dir="${HOME}/.claude/projects"
 
@@ -135,7 +152,7 @@ setup_claude_softlink() {
     print_success "    ->  $target_memory_file"
 }
 
-# 3. Setup Git Hooks
+# 4. Setup Git Hooks
 setup_git_hooks() {
     if [ ! -d "${TARGET_DIR}/.git" ]; then
         print_warn "Not a git repository. Skipping git hooks setup."
@@ -172,7 +189,7 @@ setup_git_hooks() {
     print_success "Configured git to use .githooks/"
 }
 
-# 4. Setup Bridge Files
+# 5. Setup Bridge Files
 add_bridge_reference() {
     local bridge_file="$1"
     local content="$2"
@@ -248,6 +265,7 @@ parse_args "$@"
 print_step "Installing into target project: $TARGET_DIR"
 
 setup_project_memory
+setup_skills
 setup_claude_softlink
 setup_git_hooks
 setup_bridge_files

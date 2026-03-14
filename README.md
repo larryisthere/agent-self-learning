@@ -41,14 +41,16 @@ bash scripts/install.sh
 
 The installer is idempotent:
 - Existing memory file is preserved.
+- The bundled `memory_capture` skill is refreshed in `.agent/skills/`.
 - Managed bridge content in `CLAUDE.md` and `.cursorrules` is updated in place.
 - Hook content is only replaced when template changes.
 
 ### What does the script do?
 1. Initializes `.agent/PROJECT_MEMORY.md` from the template if it doesn't exist.
-2. Auto-detects your Claude Code project directory and establishes a symbolic link.
-3. Installs a `post-commit` git hook in `.githooks/` and configures git to use it.
-4. Appends a reference to `.agent/PROJECT_MEMORY.md` in `CLAUDE.md` and `.cursorrules`, without overwriting existing content.
+2. Installs the bundled `memory_capture` skill into `.agent/skills/`.
+3. Auto-detects your Claude Code project directory and establishes a symbolic link.
+4. Installs a `post-commit` git hook in `.githooks/` and configures git to use it.
+5. Appends a reference to `.agent/PROJECT_MEMORY.md` in `CLAUDE.md` and `.cursorrules`, without overwriting existing content.
 
 ## Clone Into User Project With Independent Updates
 
