@@ -46,4 +46,7 @@
 ### [2026-03-14] Memory Capture Quality Bar
 - Capture generalized, reusable rules in English rather than patch-by-patch notes; consolidate an existing canonical lesson when the new insight overlaps instead of appending near-duplicates.
 
+### [2026-03-14] Framework Policy Changes Must Update Every Live Copy
+- When changing framework behavior or agent instructions, update every shipped execution surface in the same pass: source templates, checked-in `.agent` runtime copies, and all bridge files such as `CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, and `.cursorrules`. Do not stop after updating the canonical source if the repository also contains live mirrored copies.
+
 <!-- MEMORY_CAPTURE_APPEND_TARGET -->
