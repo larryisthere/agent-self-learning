@@ -24,7 +24,13 @@
 ## 4. Lessons Learned (Evolution Area)
 > **[INSTRUCTION FOR AI WRAP-UP]**
 > This section is actively updated by the AI via the `memory_capture` skill. When debugging a tricky issue, discovering a platform-specific bug, or establishing a new pattern, the insight MUST be appended here concisely.
-> **Constraint**: Keep items actionable. Do NOT log obvious typographical fixes. Max 20 items.
+> **Constraints**:
+> - Write every entry in English only.
+> - Capture durable rules, not patch descriptions.
+> - Keep items actionable and reusable.
+> - Do NOT log obvious typographical fixes, rename-only changes, or one-off implementation trivia.
+> - Before appending, check whether the lesson should update an existing canonical entry instead.
+> - Max 20 items.
 
 ### [YYYY-MM-DD] Dependency Conflicts
 - *Example: Do not update `package_info_plus` beyond version 4.x because it breaks iOS background execution in our current environment.*
@@ -36,5 +42,8 @@
 
 ### [2026-03-07] Multi-Agent Bridge Files
 - Generate the same self-learning bridge content into `CLAUDE.md`, `GEMINI.md`, and `ANTIGRAVITY.md` during install so agent-specific entrypoint discovery does not depend on Claude-only filenames.
+
+### [2026-03-14] Memory Capture Quality Bar
+- Capture generalized, reusable rules in English rather than patch-by-patch notes; consolidate an existing canonical lesson when the new insight overlaps instead of appending near-duplicates.
 
 <!-- MEMORY_CAPTURE_APPEND_TARGET -->

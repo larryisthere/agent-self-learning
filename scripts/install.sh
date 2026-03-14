@@ -225,7 +225,7 @@ setup_bridge_files() {
 ## Pre-Final-Response Checklist (Must)
 1. Re-read `.agent/PROJECT_MEMORY.md` in full.
 2. Decide whether this session includes non-trivial work.
-3. If yes, read and execute `.agent/skills/memory_capture/SKILL.md`.
+3. If yes, read and execute `.agent/skills/memory_capture/SKILL.md`, writing or consolidating an English-only memory entry that captures the generalized rule rather than the patch description.
 4. In the final response, include one line:
    - `Memory capture: done`
    - or `Memory capture: skipped (<reason>)`
@@ -260,4 +260,4 @@ else
     echo -e "${GREEN}Installation Complete!${NC}"
 fi
 echo " 1. Edit .agent/PROJECT_MEMORY.md to define your architecture and rules."
-echo " 2. Execute .agent/skills/memory_capture/SKILL.md to log insights after solving hard problems."
+echo " 2. Execute .agent/skills/memory_capture/SKILL.md to log durable English-only insights after solving hard problems."
