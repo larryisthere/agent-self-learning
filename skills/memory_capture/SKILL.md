@@ -39,8 +39,8 @@ description: Use when finishing a session or solving a non-trivial problem to ap
    If you cannot answer both clearly, skip capture.
 
 4. Check whether an existing entry already captures the same lesson:
-   - If yes, update or consolidate the existing canonical entry instead of appending a near-duplicate.
-   - If no, append a new entry.
+   - If yes, update or consolidate the existing canonical entry instead of appending a near-duplicate, then save the file.
+   - If no, continue with the append flow below.
 
 5. When writing or updating an entry:
    - Use English only.
@@ -48,7 +48,7 @@ description: Use when finishing a session or solving a non-trivial problem to ap
    - State the durable rule first, then the failure mode or reason if needed.
    - Avoid changelog phrasing such as "removed X from Y" when a broader rule can be stated.
 
-6. Insert a new entry immediately before `<!-- MEMORY_CAPTURE_APPEND_TARGET -->` if present,
+6. Only when step 4 determined that no canonical entry exists, insert a new entry immediately before `<!-- MEMORY_CAPTURE_APPEND_TARGET -->` if present,
    otherwise append at the end of that section, using this format:
 
    ```markdown
