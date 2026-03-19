@@ -16,7 +16,7 @@ Instead of trying to parse and merge configuration files across different AI cli
 2. **The Softlink**: The installation script creates a softlink from Claude Code's memory folder directly to `PROJECT_MEMORY.md`. The AI reads your rules natively without extra fetch overhead.
 3. **The Bridge Files**: Thin pointers (`CLAUDE.md`, `.cursorrules`) tell each AI tool where to find the memory and available skills.
 4. **The Git Hook**: A `post-commit` hook reminds you to document what you learned after each commit.
-5. **The Capture Skill**: The agent executes `.agent/skills/memory_capture/SKILL.md` to add or consolidate durable English-only lessons in the memory file, ensuring the AI gets smarter over time without turning memory into a changelog.
+5. **The Capture Skill**: The agent executes `.agent/skills/memory_capture/SKILL.md` to add or consolidate durable English-only lessons in the memory file, or park tentative lessons in a temporary section until they are proven. This keeps memory useful without turning it into a changelog.
 
 ## Agent Contract (Critical)
 
@@ -26,8 +26,10 @@ This framework expects the agent to execute local skill files directly, not call
 - Before the final response, the agent should:
   1. Re-read `.agent/PROJECT_MEMORY.md`.
   2. Decide whether the session had non-trivial work.
-  3. If yes, execute `.agent/skills/memory_capture/SKILL.md` and capture the generalized rule in English rather than the patch description.
-  4. Explicitly report `Memory capture: done` or `Memory capture: skipped (<reason>)`.
+  3. If yes, execute `.agent/skills/memory_capture/SKILL.md` and pressure-test whether the insight is truly reusable, merely tentative, or not worth storing.
+  4. Store only the generalized rule in English, never a patch-by-patch activity log.
+  5. If the lesson is plausible but not yet proven, store it in the temporary lessons section instead of long-term memory.
+  6. Explicitly report `Memory capture: done`, `Memory capture: temporary`, or `Memory capture: skipped (<reason>)`.
 
 This is a behavioral contract, so making the checklist explicit in `CLAUDE.md` is required.
 
@@ -88,10 +90,10 @@ To add only the `memory_capture` skill to an existing project (without installin
 cp -r skills/memory_capture /your/project/.agent/skills/
 ```
 
-The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `MEMORY.md`, or `.agents/MEMORY.md`) and adapts accordingly. It is designed to keep memory concise, English-only, and focused on reusable lessons instead of patch-by-patch notes.
+The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `MEMORY.md`, or `.agents/MEMORY.md`) and adapts accordingly. It is designed to keep memory concise, English-only, and focused on reusable lessons instead of patch-by-patch notes, with an explicit temporary holding area for lessons that are not yet proven.
 
 ## Usage & Best Practices
 
 - **Define Your Rules**: Open `.agent/PROJECT_MEMORY.md` and define your project's architecture, state management guidelines, and testing rules.
-- **Log Your Lessons**: Whenever you solve a difficult bug or establish a new pattern, execute `.agent/skills/memory_capture/SKILL.md` to capture the durable rule in English and consolidate duplicates when needed.
+- **Log Your Lessons**: Whenever you solve a difficult bug or establish a new pattern, execute `.agent/skills/memory_capture/SKILL.md` to capture the durable rule in English, consolidate duplicates when needed, and use the temporary lessons section when a pattern looks promising but is not yet proven.
 - **Pruning**: When Lessons Learned approaches 20 items, instruct the AI to consolidate older entries to keep the file concise and token-efficient.
