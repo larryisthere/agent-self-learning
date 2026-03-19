@@ -27,9 +27,13 @@ This framework expects the agent to execute local skill files directly, not call
   1. Re-read `.agent/PROJECT_MEMORY.md`.
   2. Decide whether the session had non-trivial work.
   3. If yes, execute `.agent/skills/memory_capture/SKILL.md` and pressure-test whether the insight is truly reusable, merely tentative, or not worth storing.
-  4. Store only the generalized rule in English, never a patch-by-patch activity log.
-  5. If the lesson is plausible but not yet proven, store it in the temporary lessons section instead of long-term memory.
-  6. Explicitly report `Memory capture: done`, `Memory capture: temporary`, or `Memory capture: skipped (<reason>)`.
+  4. Use a two-gate test for long-term memory: the lesson should pass at least 2 reusability checks and at least 1 experience-value check.
+  5. Reusability checks: applies beyond this patch, likely to recur, forgetting it would waste future effort, or it changes future decisions.
+  6. Experience-value checks: more than 20 minutes of work, 5 or more files explored, 8 or more meaningful tool calls, external docs/web research, or 2 or more rounds of user clarification.
+  7. Store only the generalized rule in English, never a patch-by-patch activity log.
+  8. If reusability passes but experience-value does not, store it in the temporary lessons section instead of long-term memory.
+  9. If the result came quickly from routine reasoning over existing context, skip memory capture.
+  10. Explicitly report `Memory capture: done`, `Memory capture: temporary`, or `Memory capture: skipped (<reason>)`.
 
 This is a behavioral contract, so making the checklist explicit in `CLAUDE.md` is required.
 
@@ -90,10 +94,11 @@ To add only the `memory_capture` skill to an existing project (without installin
 cp -r skills/memory_capture /your/project/.agent/skills/
 ```
 
-The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `MEMORY.md`, or `.agents/MEMORY.md`) and adapts accordingly. It is designed to keep memory concise, English-only, and focused on reusable lessons instead of patch-by-patch notes, with an explicit temporary holding area for lessons that are not yet proven.
+The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `MEMORY.md`, or `.agents/MEMORY.md`) and adapts accordingly. It is designed to keep memory concise, English-only, and focused on reusable, hard-won lessons instead of patch-by-patch notes, with an explicit temporary holding area for lessons that pass reusability but still lack enough cost or validation for long-term memory.
 
 ## Usage & Best Practices
 
 - **Define Your Rules**: Open `.agent/PROJECT_MEMORY.md` and define your project's architecture, state management guidelines, and testing rules.
-- **Log Your Lessons**: Whenever you solve a difficult bug or establish a new pattern, execute `.agent/skills/memory_capture/SKILL.md` to capture the durable rule in English, consolidate duplicates when needed, and use the temporary lessons section when a pattern looks promising but is not yet proven.
+- **Log Your Lessons**: Whenever you solve a difficult bug or establish a new pattern, execute `.agent/skills/memory_capture/SKILL.md` to capture only durable, expensive-to-earn rules in English, consolidate duplicates when needed, and use the temporary lessons section when a pattern looks promising but is not yet proven.
+- **Promote Carefully**: Move a temporary lesson into long-term memory only after it repeats across sessions, shows up in multiple code areas, or gains external validation.
 - **Pruning**: When Lessons Learned approaches 20 items, instruct the AI to consolidate older entries to keep the file concise and token-efficient.

@@ -29,9 +29,16 @@
 > - Capture durable rules, not patch descriptions.
 > - Keep items actionable and reusable.
 > - First ask whether the note would help in a different file, feature, or future session. If not, do not treat it as long-term memory.
+> - Treat long-term memory as scarce space for expensive-to-earn lessons: things that required substantial debugging time, broad codebase investigation, external references, web research, many tool calls, or repeated user clarification.
+> - If the conclusion came quickly from routine reasoning over existing context, do not treat it as long-term memory.
+> - A lesson should enter long-term memory only if it is both reusable and expensive enough to earn. A practical default is: at least 2 reusability signals plus at least 1 experience-value signal.
+> - Reusability signals: applies beyond this exact patch, likely to recur, forgetting it would waste future effort, or it changes future decision-making.
+> - Experience-value signals: more than 20 minutes of work, 5 or more files explored, 8 or more meaningful tool calls, external docs/web research, or 2 or more rounds of user clarification.
 > - Do NOT log obvious typographical fixes, rename-only changes, or one-off implementation trivia.
 > - Do NOT log objective session history such as "implemented X", "renamed Y", or "removed Z" unless rewritten as a reusable rule that changes future decisions.
 > - Before appending, check whether the lesson should update an existing canonical entry instead.
+> - If the same rule already exists, update it instead of appending a near-duplicate.
+> - Keep each memory bullet to at most 2 sentences and about 60 words.
 > - Max 20 items.
 
 ### [YYYY-MM-DD] Dependency Conflicts
@@ -47,6 +54,8 @@
 > - Write every entry in English only.
 > - Keep entries tentative and concise.
 > - Record why the lesson is still uncertain, local, or awaiting repetition.
+> - This section is the right place for quasi-experiences: insights that required some investigation or feel promising, but are not yet expensive enough, repeated enough, or validated enough for long-term memory.
+> - Promote an item to long-term memory when it repeats across 2 sessions, 2 different code areas, or later gains external validation.
 > - Remove or promote entries instead of letting this section grow without review.
 
 ### [YYYY-MM-DD] Placeholder Semantics
