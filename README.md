@@ -65,6 +65,18 @@ Run the installation script in the root of any project where you want a shared m
 bash scripts/install.sh
 ```
 
+Or ask your coding agent to do it for you with a prompt like:
+
+```text
+Please install or upgrade the Agent Self-Learning Framework from:
+https://github.com/larryisthere/agent-self-learning
+
+If the framework is not present in the current project yet, install it.
+If it is already present, update the local framework copy first, then re-run the installer.
+
+Run the appropriate install command, keep existing project files intact, avoid overwriting user-authored rules unless they are managed by the framework, and then tell me what was added or updated.
+```
+
 The installer is idempotent:
 - Existing memory file is preserved.
 - The bundled `memory_capture` skill is refreshed in `.agent/skills/`.
