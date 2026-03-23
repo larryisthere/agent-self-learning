@@ -6,18 +6,20 @@
 ## 1. Project Context
 - **Name**: [Insert Project Name]
 - **Description**: [Briefly describe what this project does and its core domain]
-- **Primary Tech Stack**: [e.g., Flutter, Dart, Riverpod / React, TypeScript, Next.js / Ruby on Rails]
+- **Primary Tech Stack**: [List the main implementation and tooling layers]
 
 ## 2. Core Architecture & Guidelines
-- **State Management**: [Describe the chosen pattern, e.g., "Use Riverpod for global state. Do not use SetState for complex logic."]
-- **UI & Styling**: [Describe component library, design system, or CSS strategy]
-- **Backend / API**: [Describe database choices, API protocols, ORM constraints]
-- **Testing**: [Describe expected test coverage, unit vs widget/integration logic]
+- **Memory Model**: [Name the canonical memory file and explain what is source of truth vs mirrored guidance.]
+- **Instruction Surfaces**: [List mirrored files such as bridge files or runtime copies that must stay in sync.]
+- **Skill Design**: [Describe what a high-quality skill should contain in this project: triggers, success criteria, constraints, verification, stop boundaries, etc.]
+- **Verification**: [Describe what evidence agents should gather before claiming work is complete.]
+- **Planning**: [Describe how non-trivial work should be scoped before implementation, including risks and the mitigation or rollback path for the highest-risk item.]
+- **Security**: [List facts that must never be written into project memory, such as secrets or private credentials.]
 
 ## 3. Custom Agent Behaviors
-[Insert any specific rules for this project here. e.g.:]
-- Always write explicit types for return values.
-- Never mock the Database class directly in tests; use the abstract Repository.
+- [List project-specific communication, workflow, or implementation rules.]
+- [Include any final-response requirements such as memory capture reporting.]
+- [Add any scope or verification expectations that should always apply.]
 
 ---
 

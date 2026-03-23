@@ -8,13 +8,27 @@ Out of the box, AI agents suffer from amnesia. They repeatedly make the same arc
 
 This framework solves these issues by establishing a **Single Source of Truth** using a simple softlink and git hook architecture.
 
+## Core Contract
+
+- `.agent/PROJECT_MEMORY.md` is the canonical project memory and operator contract.
+- Bridge files (`CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, `.cursorrules`) mirror the minimum instructions agents must always see.
+- The installer is the source for the managed bridge block; when framework policy changes, update the installer template, the checked-in bridge files, and the live `.agent` files in the same pass.
+- Project memory is for durable project knowledge only. Do not store secrets, credentials, tokens, or environment-specific private values in it.
+
+## Deliberate Tradeoffs
+
+- **One canonical memory file over many category files**: a single SSOT is easier to audit and harder to drift, even if it means pruning and consolidation matter more.
+- **Manual skill execution over automatic capture**: the agent must make an explicit non-trivial-work judgment and run `memory_capture`, which keeps the lesson bar higher than fully automatic logging.
+- **Local markdown and bridge files over plugin-heavy infrastructure**: this keeps the framework portable across agents and repos, even if it gives up richer automatic retrieval features.
+- **Managed mirrored blocks over agent-specific custom prose**: we accept some duplication so multiple agent entrypoints stay aligned from one installer-managed contract.
+
 ## How it Works
 
 Instead of trying to parse and merge configuration files across different AI clients ("Push" architecture), this framework uses a "Pull" architecture:
 
 1. **The Shared Brain**: `PROJECT_MEMORY.md` lives in your `.agent/` directory and is committed to Git.
 2. **The Softlink**: The installation script creates a softlink from Claude Code's memory folder directly to `PROJECT_MEMORY.md`. The AI reads your rules natively without extra fetch overhead.
-3. **The Bridge Files**: Thin pointers (`CLAUDE.md`, `.cursorrules`) tell each AI tool where to find the memory and available skills.
+3. **The Bridge Files**: Thin pointers (`CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, `.cursorrules`) tell each AI tool where to find the memory and available skills.
 4. **The Git Hook**: A `post-commit` hook reminds you to document what you learned after each commit.
 5. **The Capture Skill**: The agent executes `.agent/skills/memory_capture/SKILL.md` to add or consolidate durable English-only lessons in the memory file, or park tentative lessons in a temporary section until they are proven. This keeps memory useful without turning it into a changelog.
 
@@ -23,17 +37,23 @@ Instead of trying to parse and merge configuration files across different AI cli
 This framework expects the agent to execute local skill files directly, not call built-in skill tooling:
 
 - `run .agent/skills/<name>/SKILL.md` means "read the file and execute its steps manually."
+- Before starting non-trivial implementation work, the agent should:
+  1. Define scope, definition of done, and explicit out-of-scope items.
+  2. Note the key risks, trade-offs, or failure modes that could make the work go wrong.
+  3. For the highest-risk item, note the mitigation or rollback path before implementation.
+  4. Use that framing to stay within scope during execution.
 - Before the final response, the agent should:
   1. Re-read `.agent/PROJECT_MEMORY.md`.
   2. Decide whether the session had non-trivial work.
-  3. If yes, execute `.agent/skills/memory_capture/SKILL.md` and pressure-test whether the insight is truly reusable, merely tentative, or not worth storing.
-  4. Use a two-gate test for long-term memory: the lesson should pass at least 2 reusability checks and at least 1 experience-value check.
-  5. Reusability checks: applies beyond this patch, likely to recur, forgetting it would waste future effort, or it changes future decisions.
-  6. Experience-value checks: more than 20 minutes of work, 5 or more files explored, 8 or more meaningful tool calls, external docs/web research, or 2 or more rounds of user clarification.
-  7. Store only the generalized rule in English, never a patch-by-patch activity log.
-  8. If reusability passes but experience-value does not, store it in the temporary lessons section instead of long-term memory.
-  9. If the result came quickly from routine reasoning over existing context, skip memory capture.
-  10. Explicitly report `Memory capture: done`, `Memory capture: temporary`, or `Memory capture: skipped (<reason>)`.
+  3. Run the most relevant verification available for the work and report the evidence, or state clearly why verification could not be completed.
+  4. If yes, execute `.agent/skills/memory_capture/SKILL.md` and pressure-test whether the insight is truly reusable, merely tentative, or not worth storing.
+  5. Use a two-gate test for long-term memory: the lesson should pass at least 2 reusability checks and at least 1 experience-value check.
+  6. Reusability checks: applies beyond this patch, likely to recur, forgetting it would waste future effort, or it changes future decisions.
+  7. Experience-value checks: more than 20 minutes of work, 5 or more files explored, 8 or more meaningful tool calls, external docs/web research, or 2 or more rounds of user clarification.
+  8. Store only the generalized rule in English, never a patch-by-patch activity log.
+  9. If reusability passes but experience-value does not, store it in the temporary lessons section instead of long-term memory.
+  10. If the result came quickly from routine reasoning over existing context, skip memory capture.
+  11. Explicitly report `Memory capture: done`, `Memory capture: temporary`, or `Memory capture: skipped (<reason>)`.
 
 This is a behavioral contract, so making the checklist explicit in `CLAUDE.md` is required.
 
@@ -48,7 +68,7 @@ bash scripts/install.sh
 The installer is idempotent:
 - Existing memory file is preserved.
 - The bundled `memory_capture` skill is refreshed in `.agent/skills/`.
-- Managed bridge content in `CLAUDE.md` and `.cursorrules` is updated in place.
+- Managed bridge content in `CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, and `.cursorrules` is updated in place.
 - Hook content is only replaced when template changes.
 
 ### What does the script do?
@@ -56,7 +76,7 @@ The installer is idempotent:
 2. Installs the bundled `memory_capture` skill into `.agent/skills/`.
 3. Auto-detects your Claude Code project directory and establishes a symbolic link.
 4. Installs a `post-commit` git hook in `.githooks/` and configures git to use it.
-5. Appends a reference to `.agent/PROJECT_MEMORY.md` in `CLAUDE.md` and `.cursorrules`, without overwriting existing content.
+5. Appends a reference to `.agent/PROJECT_MEMORY.md` in `CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, and `.cursorrules`, without overwriting existing content.
 
 ## Clone Into User Project With Independent Updates
 
@@ -101,4 +121,6 @@ The skill auto-detects the project's memory file (`.agent/PROJECT_MEMORY.md`, `M
 - **Define Your Rules**: Open `.agent/PROJECT_MEMORY.md` and define your project's architecture, state management guidelines, and testing rules.
 - **Log Your Lessons**: Whenever you solve a difficult bug or establish a new pattern, execute `.agent/skills/memory_capture/SKILL.md` to capture only durable, expensive-to-earn rules in English, consolidate duplicates when needed, and use the temporary lessons section when a pattern looks promising but is not yet proven.
 - **Promote Carefully**: Move a temporary lesson into long-term memory only after it repeats across sessions, shows up in multiple code areas, or gains external validation.
+- **Plan Non-Trivial Work**: Before significant implementation, write down scope, definition of done, out-of-scope items, the main risks or trade-offs, and the mitigation or rollback path for the highest-risk item.
+- **Verify Before Claiming Success**: Run the most relevant check you can before saying work is complete. If you cannot verify safely, say so explicitly.
 - **Pruning**: When Lessons Learned approaches 20 items, instruct the AI to consolidate older entries to keep the file concise and token-efficient.

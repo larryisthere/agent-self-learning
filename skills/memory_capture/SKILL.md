@@ -1,6 +1,6 @@
 ---
 name: memory_capture
-description: Use when finishing a session or solving a non-trivial problem to append a reusable insight to the project's long-term memory.
+description: Use when a session produced a verified, non-trivial, reusable lesson, or when solving a non-trivial problem revealed a durable rule worth preserving in long-term memory.
 ---
 
 # Memory Capture
@@ -10,12 +10,14 @@ This skill has two valid outcomes:
 - If the lesson feels plausible but not yet proven, park it in the temporary lessons section instead of polluting long-term memory.
 
 ## When to Use
+- A verified session produced a reusable lesson that should change future decisions
 - You resolved a non-obvious bug with a systemic root cause
 - You established a new architectural pattern worth preserving
 - You discovered a library incompatibility or platform-specific constraint
-- The post-commit hook prompted you to capture memory
+- The post-commit hook prompted you to check whether a real reusable lesson should be captured
 
 ## When NOT to Use
+- The session ended but produced no verified, reusable lesson
 - The fix was a simple typo or syntax error
 - The note would only describe a one-off patch instead of a reusable rule
 - The detail is limited to local variable names, widget parameters, or commit-style implementation trivia
@@ -29,6 +31,7 @@ This skill has two valid outcomes:
 - Write every memory entry in English only, even if the work or discussion happened in another language.
 - Treat "I changed X to Y" as a smell. Rewrite it as "In situations like Z, prefer A over B because C", or skip capture.
 - Ask explicitly: "Will this still help on a different file, feature, or future session?" If not, do not put it into long-term memory.
+- Do not capture lessons that depend on unverified assumptions. If you did not observe proof or a concrete failure mode, skip capture until the lesson is verified.
 
 ## Long-Term Qualification Test
 Store a lesson in long-term memory only if it passes both gates below.
@@ -80,6 +83,8 @@ If Gate A fails, skip capture.
    - Which Gate A checks passed?
    - Which Gate B checks passed?
    If you cannot answer the first three clearly, skip long-term capture.
+   - What concrete evidence or observed failure supports this lesson?
+   If you cannot answer the first three clearly, skip long-term capture.
 
 4. Choose the destination:
    - Long-term memory: use this only when both Gate A and Gate B pass.
@@ -97,6 +102,7 @@ If Gate A fails, skip capture.
    - Keep it actionable and concise.
    - Use at most 2 sentences and about 60 words.
    - State the durable rule first, then the failure mode, confidence source, or reason if needed.
+   - Mention the failure mode or rejected path only when it improves future decisions.
    - Avoid changelog phrasing such as "removed X from Y" when a broader rule can be stated.
    - Do not store purely objective session history as memory. Memory should change future decisions, not merely describe past actions.
    - If useful, mention the source of confidence briefly: repeated occurrence, costly investigation, or external validation.
